@@ -20,7 +20,14 @@ class UserProfile(AbstractUser):
         verbose_name_plural = '用户'
 
     def __str__(self):
-        return self.name
+        if self.name:
+            # 如果不为空则返回用户名
+            return self.name
+        else:
+            # 如果用户名为空则返回不能为空的对象
+            return self.username
+        # return self.name
+
 
 
 class VerifyCode(models.Model):
