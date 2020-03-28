@@ -9,7 +9,23 @@ from goods.models import Goods, GoodsCategory
 #
 #     def create(self, validated_data):
 #         return Goods.objects.create(**validated_data)
+
+
+class CategorySerializer3(serializers.ModelSerializer):
+    class Meta:
+        model = GoodsCategory
+        fields = '__all__'
+
+
+class CategorySerializer2(serializers.ModelSerializer):
+    sub_cat = CategorySerializer3(many=True)
+    class Meta:
+        model = GoodsCategory
+        fields = '__all__'
+
+
 class CategorySerializer(serializers.ModelSerializer):
+    sub_cat = CategorySerializer2(many=True)
     class Meta:
         model = GoodsCategory
         fields = '__all__'
@@ -23,3 +39,9 @@ class GoodsSerializer(serializers.ModelSerializer):
         model = Goods
         # fields = ['name', 'click_num', 'market_price', 'add_time']
         fields = '__all__'  # 序列化所有字段
+
+
+class GoodCatgorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Goods
+        fields = "__all__"

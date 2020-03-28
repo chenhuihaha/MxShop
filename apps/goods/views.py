@@ -2,13 +2,17 @@ from django.shortcuts import render
 # from rest_framework import status
 from rest_framework import mixins
 from rest_framework import generics
-
-from .serializers import GoodsSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.pagination import PageNumberPagination # 分页功能
+from rest_framework import filters
+from rest_framework.pagination import PageNumberPagination  # 分页功能
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
-from .models import Goods
+
+from .models import Goods,GoodsCategory
+from .filters import GoodstFilter
+from .serializers import GoodsSerializer,CategorySerializer
+
 
 
 # Create your views here.
@@ -39,6 +43,7 @@ class GoodsPagination(PageNumberPagination):
     page_query_parm = 'p'
     max_page_size = 100
 
+
 # GenericView方式实现商品列表页和分页功能
 # class GoodsListView(generics.ListAPIView):
 #     """
@@ -48,13 +53,25 @@ class GoodsPagination(PageNumberPagination):
 #     serializer_class = GoodsSerializer
 #     pagination_class = GoodsPagination
 
-    # def get(self, request, *args, **kwargs):
-    #     return self.list(request, *args, **kwargs)
+# def get(self, request, *args, **kwargs):
+#     return self.list(request, *args, **kwargs)
 
 
 # viewsets和router完成商品列表页
-class GoodsListViewSet(mixins.ListModelMixin,viewsets.GenericViewSet):
-    """商品列表页"""
+class GoodsListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """商品列表页,分页，搜索，过滤，排序"""
     queryset = Goods.objects.all()
     serializer_class = GoodsSerializer
     pagination_class = GoodsPagination
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
+    filter_class = GoodstFilter
+    search_fields = ('name', 'goods_brief', 'goods_desc')
+    ordering_fields = ('sold_num', 'add_time')
+
+
+class CategoryViewset(mixins.ListModelMixin,mixins.RetrieveModelMixin,viewsets.GenericViewSet):
+    """
+    商品分类列表数据
+    """
+    queryset = GoodsCategory.objects.filter(category_type=1)
+    serializer_class = CategorySerializer
