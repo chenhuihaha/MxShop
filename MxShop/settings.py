@@ -48,12 +48,13 @@ INSTALLED_APPS = [
     'xadmin',
     'rest_framework',
     'django_filters',
-    'corsheaders'
+    'corsheaders',
+    'rest_framework.authtoken'
 
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',   # 跨域请求中间件
+    'corsheaders.middleware.CorsMiddleware',  # 跨域请求中间件
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -129,6 +130,10 @@ USE_L10N = True
 
 USE_TZ = False
 
+AUTHENTICATION_BACKENDS = (
+    'users.views.CustomBackend',
+)
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
@@ -144,3 +149,17 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # }
 
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.TokenAuthentication',
+    ]
+}
+
+import datetime
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=300),
+    'JWT_AUTH_HEADER_PREFIX': 'JWT'
+}

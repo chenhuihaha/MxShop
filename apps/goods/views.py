@@ -1,16 +1,17 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 # from rest_framework import status
 from rest_framework import mixins
 from rest_framework import generics
 from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import filters
 from rest_framework.pagination import PageNumberPagination  # 分页功能
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
+from rest_framework.authentication import TokenAuthentication
 
 from .models import Goods,GoodsCategory
-from .filters import GoodstFilter
+from .filters import GoodsFilter
 from .serializers import GoodsSerializer,CategorySerializer
 
 
@@ -40,7 +41,7 @@ from .serializers import GoodsSerializer,CategorySerializer
 class GoodsPagination(PageNumberPagination):
     page_size = 12
     page_size_query_param = 'page_size'
-    page_query_parm = 'p'
+    page_query_param = 'page'
     max_page_size = 100
 
 
@@ -63,10 +64,11 @@ class GoodsListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Goods.objects.all()
     serializer_class = GoodsSerializer
     pagination_class = GoodsPagination
+    authentication_classes = (TokenAuthentication,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
-    filter_class = GoodstFilter
+    filter_class = GoodsFilter
     search_fields = ('name', 'goods_brief', 'goods_desc')
-    ordering_fields = ('sold_num', 'add_time')
+    ordering_fields = ('sold_num', 'shop_price')
 
 
 class CategoryViewset(mixins.ListModelMixin,mixins.RetrieveModelMixin,viewsets.GenericViewSet):

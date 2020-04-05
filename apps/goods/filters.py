@@ -4,7 +4,7 @@ from django.db.models import Q
 from .models import Goods
 
 
-class GoodstFilter(django_filters.rest_framework.FilterSet):
+class GoodsFilter(django_filters.rest_framework.FilterSet):
     """商品过滤类"""
     pricemin = django_filters.NumberFilter(field_name='shop_price', lookup_expr='gte')
     pricemax = django_filters.NumberFilter(field_name='shop_price', lookup_expr='lte')
