@@ -159,7 +159,14 @@ REST_FRAMEWORK = {
 }
 
 import datetime
+
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=300),
     'JWT_AUTH_HEADER_PREFIX': 'JWT'
 }
+
+# 手机号码的正则表达式
+REGEX_MOBILE = "^1[358]\d{9}$|^147\d{8}$|^176\d{8}$"
+
+# 云片网设置
+APIKEY = 'APIKEY'
