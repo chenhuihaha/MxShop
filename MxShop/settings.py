@@ -168,5 +168,7 @@ JWT_AUTH = {
 # 手机号码的正则表达式
 REGEX_MOBILE = "^1[358]\d{9}$|^147\d{8}$|^176\d{8}$"
 
+
+
 # 云片网设置
-APIKEY = 'APIKEY'
+APIKEY = '261ee184839ff91be6d425c01cd416f2'
