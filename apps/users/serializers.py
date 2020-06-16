@@ -2,6 +2,9 @@ import re
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from datetime import datetime, timedelta
+
+from rest_framework.validators import UniqueValidator
+
 from .models import VerifyCode
 
 from MxShop.settings import REGEX_MOBILE
@@ -36,14 +39,19 @@ class SmsSerializer(serializers.Serializer):
 
 
 class UserReSerializer(serializers.ModelSerializer):
-    code = serializers.CharField(required=True, max_length=4, min_length=4,error_messages={
+    code = serializers.CharField(required=True, write_only=True,max_length=4, min_length=4,error_messages={
         "blank":"请输入验证码",
         "required":"请输入验证码",
         "max_length":"验证码格式错误",
         "min_length": "验证码格式错误"
     },
     help_text='验证码')
+    username = serializers.CharField(label="用户名", help_text="用户名", required=True, allow_blank=False,
+                                     validators=[UniqueValidator(queryset=User.objects.all(), message="用户已经存在")])
 
+    password = serializers.CharField(
+        style={'input_type': 'password'}, help_text="密码", label="密码", write_only=True,
+    )
     def validate_code(self, code):
         # try:
         #     verify_records = VerifyCode.objects.get(mobile=self.initial_data["username"], code=code)
@@ -57,7 +65,7 @@ class UserReSerializer(serializers.ModelSerializer):
             last_records = verify_records[0]
 
             five_mintes_ago = datetime.now() - timedelta(hours=0, minutes=1, seconds=0)
-            if five_mintes_ago < last_records:
+            if five_mintes_ago > last_records.add_time:
                 raise serializers.ValidationError("验证码过期")
             if last_records.code!=code:
                 raise serializers.ValidationError("验证码错误")
@@ -71,4 +79,4 @@ class UserReSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'code', 'mobile')
+        fields = ('username', 'code', 'mobile','password')
